@@ -1,0 +1,18 @@
+# Python cache files
+__pycache__/
+
+# Virtual environments
+.venv/
+
+# Environment variables
+.env
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Results directory
+results/
+
+# Maps directory
+maps/
+

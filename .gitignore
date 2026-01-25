@@ -25,6 +25,8 @@ PIPFILE.lock
 
 # Environments
 .env
+.env.*
+.envrc
 .venv
 env/
 venv/

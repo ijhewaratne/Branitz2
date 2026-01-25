@@ -45,6 +45,39 @@ export BRANITZ_DATA_ROOT=/path/to/your/data
 python -m src.scripts.pipeline --cluster-id ST001_HEINRICH_ZILLE_STRASSE
 ```
 
+## Optional: Enable LLM Explanations (Gemini)
+
+LLM explanations are **optional**. Without a key, the decision pipeline will automatically fall back to a safe template explanation.
+
+1. **Create `.env` in the repo root** (never commit this file):
+
+```bash
+echo 'GOOGLE_API_KEY=your_key_here' > .env
+echo 'GOOGLE_MODEL=gemini-2.0-flash' >> .env   # optional
+echo 'LLM_TIMEOUT=30' >> .env                  # optional
+echo 'UHDC_FORCE_TEMPLATE=false' >> .env       # optional
+```
+
+2. **Verify environment wiring**:
+
+```bash
+PYTHONPATH=src python -c "from branitz_heat_decision.uhdc.explainer import LLM_READY; print('LLM ready:', LLM_READY)"
+```
+
+3. **Run decision with LLM explanation**:
+
+```bash
+PYTHONPATH=src python -m branitz_heat_decision.cli.decision \
+  --cluster-id ST010_HEINRICH_ZILLE_STRASSE \
+  --llm-explanation \
+  --explanation-style executive
+```
+
+### Security notes
+- **Do not commit keys**: `.env` is gitignored (see `.gitignore`).
+- **CI/CD**: inject `GOOGLE_API_KEY` via environment variables/secrets, not files.
+- **If a key was committed accidentally**: remove it from git history and **rotate the key** immediately.
+
 ## Project Structure
 - `data/raw/`: Original Wärmekataster, OSM, Stadtwerke data
 - `data/processed/`: Validated, pipeline-ready data (GeoParquet)

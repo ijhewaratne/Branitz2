@@ -1,0 +1,7 @@
+{
+  "close_cost_rel_threshold": 0.05,
+  "close_cost_abs_threshold": 5.0,
+  "robust_win_fraction": 0.75,
+  "sensitive_win_fraction": 0.60
+}
+

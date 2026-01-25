@@ -1,10 +1,18 @@
 """
 Pytest configuration and fixtures for Branitz Heat Decision tests.
 """
+import sys
+from pathlib import Path
+
+# Ensure src/ is importable when the package isn't installed in the environment.
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SRC_DIR = PROJECT_ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-from pathlib import Path
 from shapely.geometry import Polygon, Point, LineString
 import json
 

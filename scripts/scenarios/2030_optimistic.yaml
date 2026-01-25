@@ -1,0 +1,17 @@
+lifetime_years: 20
+discount_rate: 0.04
+
+# cleaner + cheaper electricity, better COP, lower HP CAPEX
+electricity_price_eur_per_mwh: 200.0
+gas_price_eur_per_mwh: 90.0
+biomass_price_eur_per_mwh: 70.0
+
+ef_electricity_kg_per_mwh: 200.0
+ef_gas_kg_per_mwh: 200.0
+ef_biomass_kg_per_mwh: 25.0
+
+hp_cost_eur_per_kw_th: 700.0
+cop_default: 3.2
+
+dh_generation_type: biomass
+
