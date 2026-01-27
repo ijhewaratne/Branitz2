@@ -1,6 +1,0 @@
-pandapower>=3.1
-folium
-branca
-shapely
-pandas
-
