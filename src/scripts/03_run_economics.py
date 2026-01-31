@@ -36,8 +36,10 @@ from branitz_heat_decision.config import (
 from branitz_heat_decision.economics import (
     DHInputs,
     HPInputs,
+    build_pipe_network_results_for_cluster,
     get_default_economics_params,
     get_default_monte_carlo_params,
+    get_trunk_connection_length_m,
     compute_lcoh_dh,
     compute_lcoh_hp,
     compute_co2_dh,
@@ -48,7 +50,11 @@ from branitz_heat_decision.economics import (
     co2_hp,
     run_monte_carlo,
 )
-from branitz_heat_decision.economics.lcoh import build_plant_context_from_params
+from branitz_heat_decision.economics.lcoh import (
+    PlantContext,
+    build_plant_context_from_params,
+    compute_lcoh_dh_for_cluster,
+)
 from branitz_heat_decision.economics.co2 import DHCO2Inputs, HPCO2Inputs
 
 
@@ -197,6 +203,11 @@ def main() -> None:
     ap.add_argument("--sensitivity", action="store_true", help="Run sensitivity analysis (±5% parameter variations)")
     ap.add_argument("--stress-tests", action="store_true", help="Run stress test scenarios")
     ap.add_argument("--full-validation", action="store_true", help="Run all validation: Monte Carlo + Sensitivity + Stress Tests")
+    ap.add_argument(
+        "--use-cluster-method",
+        action="store_true",
+        help="Use compute_lcoh_dh_for_cluster with combined CHA+DHA data (pipes, lv_results)",
+    )
     args = ap.parse_args()
 
     cluster_id = args.cluster_id
@@ -231,17 +242,59 @@ def main() -> None:
     )
 
     plant_ctx = build_plant_context_from_params(params)
-    lcoh_dh, lcoh_dh_breakdown = compute_lcoh_dh(
-        annual_heat_mwh=annual_heat_mwh,
-        pipe_lengths_by_dn=pipe_lengths_by_dn or None,
-        total_pipe_length_m=total_pipe_length_m,
-        pump_power_kw=pump_power_kw,
-        params=params,
-        plant_cost_allocation=params.plant_cost_allocation,
-        plant_context=plant_ctx,
-        street_peak_load_kw=design_capacity_kw,
-        district_total_design_capacity_kw=params.district_total_design_capacity_kw or None,
-    )
+
+    if args.use_cluster_method:
+        # Integration checklist: pass combined CHA+DHA data to compute_lcoh_dh_for_cluster
+        combined_results = build_pipe_network_results_for_cluster(
+            cluster_id=cluster_id,
+            annual_heat_mwh=annual_heat_mwh,
+            peak_load_kw=design_capacity_kw,
+        )
+        connection_length_m = get_trunk_connection_length_m(cluster_id)
+        pump_cost_eur = pump_power_kw * float(params.pump_cost_per_kw)
+        cost_method = (
+            params.plant_cost_allocation
+            if params.plant_cost_allocation in ("marginal", "proportional", "none")
+            else "marginal"
+        )
+        cluster_result = compute_lcoh_dh_for_cluster(
+            annual_heat_demand_mwh=annual_heat_mwh,
+            pipe_network_results=combined_results,
+            connection_length_m=connection_length_m,
+            street_peak_load_kw=design_capacity_kw,
+            plant_context=plant_ctx,
+            pump_cost_eur=pump_cost_eur,
+            params=params,
+            cost_allocation_method=cost_method,
+        )
+        lcoh_dh = cluster_result["lcoh_eur_per_mwh"]
+        cb = cluster_result.get("capex_breakdown", {})
+        lcoh_dh_breakdown = {
+            "capex_total": cluster_result.get("capex_total", 0),
+            "capex_pipes": cb.get("network_pipes", 0) + cb.get("connection", 0),
+            "capex_pump": cb.get("pump", 0),
+            "capex_plant": cb.get("plant_allocated", 0),
+            "opex_annual": cluster_result.get("opex_annual", 0),
+            "opex_om": cluster_result.get("opex_breakdown", {}).get("network_om", 0),
+            "opex_energy": cluster_result.get("opex_breakdown", {}).get("energy", 0),
+            "crf": cluster_result.get("crf", 0.07),
+            "annual_heat_mwh": annual_heat_mwh,
+            "generation_type": params.dh_generation_type,
+            "plant_allocation": cluster_result.get("plant_allocation", {}),
+            "plant_cost_allocation_method": cost_method,
+        }
+    else:
+        lcoh_dh, lcoh_dh_breakdown = compute_lcoh_dh(
+            annual_heat_mwh=annual_heat_mwh,
+            pipe_lengths_by_dn=pipe_lengths_by_dn or None,
+            total_pipe_length_m=total_pipe_length_m,
+            pump_power_kw=pump_power_kw,
+            params=params,
+            plant_cost_allocation=params.plant_cost_allocation,
+            plant_context=plant_ctx,
+            street_peak_load_kw=design_capacity_kw,
+            district_total_design_capacity_kw=params.district_total_design_capacity_kw or None,
+        )
     lcoh_hp, lcoh_hp_breakdown = compute_lcoh_hp(
         annual_heat_mwh=annual_heat_mwh,
         hp_total_capacity_kw_th=design_capacity_kw,

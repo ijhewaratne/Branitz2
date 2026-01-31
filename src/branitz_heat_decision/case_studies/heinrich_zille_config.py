@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Dict
 
 from branitz_heat_decision.economics import PlantContext, get_default_economics_params
-from branitz_heat_decision.economics.lcoh import compute_lcoh_dh
+from branitz_heat_decision.economics.lcoh import compute_lcoh_dh, compute_lcoh_dh_for_cluster
 
 
 def evaluate_heinrich_zille_scenarios(
@@ -47,6 +47,7 @@ def evaluate_heinrich_zille_scenarios(
         total_cost_eur=1_500_000.0,
         utilized_capacity_kw=1000.0,
         is_built=True,
+        marginal_cost_per_kw=150.0,  # €/kW for expansion
     )
 
     # Scenario 2: Constrained plant (marginal capacity triggered)
@@ -55,6 +56,7 @@ def evaluate_heinrich_zille_scenarios(
         total_cost_eur=1_500_000.0,
         utilized_capacity_kw=2400.0,
         is_built=True,
+        marginal_cost_per_kw=150.0,  # €/kW for expansion
     )
 
     results = {}

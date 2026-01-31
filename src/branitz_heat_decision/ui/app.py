@@ -689,23 +689,165 @@ if selected_cluster_id:
     with tab_economics:
         render_stepper("Economics")
         st.subheader("Economic Analysis & Robustness")
-        
+
+        def _build_capex_breakdown_for_ui(dh_breakdown: dict, hp_breakdown: dict) -> tuple:
+            """Adapt economics_deterministic format to UI capex_breakdown structure."""
+            dh_capex = {
+                "network_pipes": dh_breakdown.get("capex_pipes", 0),
+                "connection": 0.0,  # Included in capex_pipes when using CHA lengths
+                "plant_allocated": dh_breakdown.get("capex_plant", 0),
+                "pump": dh_breakdown.get("capex_pump", 0),
+                "lv_upgrade": 0.0,  # DH has no LV upgrade
+            }
+            hp_capex = {
+                "network_pipes": 0.0,
+                "connection": 0.0,
+                "plant_allocated": 0.0,
+                "pump": 0.0,
+                "lv_upgrade": hp_breakdown.get("capex_lv_upgrade", 0),
+            }
+            dh_data = {
+                **dh_breakdown,
+                "capex_breakdown": dh_capex,
+                "capex_total": dh_breakdown.get("capex_total", 0),
+                "opex_annual": dh_breakdown.get("opex_annual", 0),
+                "plant_allocation": dh_breakdown.get("plant_allocation", {}),
+            }
+            hp_data = {
+                **hp_breakdown,
+                "capex_breakdown": hp_capex,
+                "capex_hp": hp_breakdown.get("capex_hp", 0),
+                "capex_total": hp_breakdown.get("capex_total", 0),
+                "opex_annual": hp_breakdown.get("opex_annual", 0),
+            }
+            return dh_data, hp_data
+
+        def render_detailed_cost_breakdown(econ_results: dict, system_type: str = "DH"):
+            """Render expandable cost breakdown with correct marginal cost display."""
+            prefix = "dh" if system_type == "DH" else "hp"
+            data = econ_results.get(prefix, {})
+            capex = data.get("capex_breakdown", {})
+
+            title = "District Heating" if system_type == "DH" else "Heat Pump"
+            with st.expander(f"💰 {title} - Detailed Breakdown", expanded=True):
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.subheader(title)
+                    st.markdown("**Capital Costs (CAPEX)**")
+                    c1, c2 = st.columns([3, 1])
+
+                    if system_type == "DH":
+                        c1.text("Network Pipes:")
+                        c2.text(f"{capex.get('network_pipes', 0):,.0f} €")
+
+                        c1.text("Connection to Plant:")
+                        c2.text(f"{capex.get('connection', 0):,.0f} €")
+
+                        c1.text("Street Pump:")
+                        c2.text(f"{capex.get('pump', 0):,.0f} €")
+
+                        plant_alloc = capex.get("plant_allocated", 0)
+                        c1.markdown("**Plant Cost Allocation:**")
+                        if plant_alloc > 0:
+                            c2.markdown(f"**{plant_alloc:,.0f} €**", help="Marginal capacity expansion cost")
+                        else:
+                            c2.markdown("**0 €**", help="Utilizes existing plant capacity (sunk cost)")
+
+                        lv_cost = capex.get("lv_upgrade", 0)
+                        if lv_cost > 0:
+                            c1.text("LV Grid Upgrade:")
+                            c2.text(f"{lv_cost:,.0f} € ⚡")
+                    else:
+                        c1.text("Heat Pump Units:")
+                        c2.text(f"{data.get('capex_hp', 0):,.0f} €")
+
+                        lv_cost = capex.get("lv_upgrade", 0)
+                        c1.text("LV Grid Upgrade:")
+                        c2.text(f"{lv_cost:,.0f} € ⚡")
+
+                    st.divider()
+                    st.markdown(f"**Total CAPEX: {data.get('capex_total', 0):,.0f} €**")
+
+                with col2:
+                    st.markdown("**Operating Costs (OPEX)**")
+                    opex = data.get("opex_annual", 0)
+                    st.text(f"Annual OPEX: {opex:,.0f} €")
+
+                    alloc_info = data.get("plant_allocation", {}) if system_type == "DH" else {}
+                    if alloc_info:
+                        st.info(
+                            f"""
+**Cost Method: {alloc_info.get('method', 'N/A').upper()}**
+
+{alloc_info.get('rationale', 'No allocation info')}
+"""
+                        )
+                        alloc_eur = alloc_info.get("allocated_eur", alloc_info.get("allocated_cost", 0))
+                        if alloc_info.get("method") == "marginal" and alloc_eur == 0:
+                            st.success(
+                                "✅ **Marginal Cost Principle Applied**\n\nPlant is treated as shared infrastructure. Only network extension costs considered at cluster level.",
+                                icon="💡",
+                            )
+
+                with st.expander("🔍 Raw Data"):
+                    st.json(data)
+
+        def render_comparison_with_lv_upgrade(dh_data: dict, hp_data: dict):
+            """Side-by-side comparison including LV grid upgrade visibility."""
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.header("🏭 District Heating")
+                dh = dh_data.get("capex_breakdown", {})
+
+                st.metric("Network Cost", f"{dh.get('network_pipes', 0):,.0f} €")
+                st.metric(
+                    "Plant Allocation",
+                    f"{dh.get('plant_allocated', 0):,.0f} €",
+                    help="Marginal cost: Only expansion capacity, not full plant",
+                )
+
+                if dh.get("network_pipes", 0) == 0:
+                    st.error("⚠️ Network pipes showing 0€ - check geometry extraction")
+
+            with col2:
+                st.header("⚡ Heat Pump + LV Grid")
+                hp = hp_data.get("capex_breakdown", {})
+
+                st.metric("Heat Pump Units", f"{hp_data.get('capex_hp', 0):,.0f} €")
+
+                lv_cost = hp.get("lv_upgrade", 0)
+                if lv_cost > 0:
+                    st.metric("LV Grid Upgrade", f"{lv_cost:,.0f} €", delta="Required", delta_color="inverse")
+                    st.info("Grid reinforcement needed for HP electrification")
+                else:
+                    st.metric("LV Grid Upgrade", "0 €", delta="No upgrade needed", delta_color="normal")
+
+                st.metric("Total HP CAPEX", f"{hp_data.get('capex_total', 0):,.0f} €")
+
         econ_status = services["result"].get_result_status(selected_cluster_id)["economics"]
         if econ_status:
             st.success("Economic Simulation Complete")
             artifacts = services["result"].get_existing_artifacts(selected_cluster_id, "economics")
-            
+
             # Load files by matching names
             deterministic = None
             monte_carlo = None
-            
+
             for art in artifacts:
                 if "deterministic" in art.name:
                     deterministic = json.load(open(art))
                 elif "monte_carlo" in art.name:
                     monte_carlo = json.load(open(art))
-            
+
             if deterministic:
+                # Build UI-friendly breakdown
+                dh_breakdown = deterministic.get("lcoh_dh_breakdown", {})
+                hp_breakdown = deterministic.get("lcoh_hp_breakdown", {})
+                dh_data, hp_data = _build_capex_breakdown_for_ui(dh_breakdown, hp_breakdown)
+                econ_for_ui = {"dh": dh_data, "hp": hp_data}
+
                 # 1. LCOH COMPARISON
                 st.markdown("### 💰 Levelized Cost of Heat (LCoH)")
                 col1, col2 = st.columns(2)
@@ -805,18 +947,18 @@ if selected_cluster_id:
                     st.caption("Bold values are median (P50)")
                 
                 st.markdown("---")
-                
-                # 4. COST BREAKDOWN (expandable)
-                with st.expander("💵 Detailed Cost Breakdown"):
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown("**District Heating**")
-                        dh_breakdown = deterministic.get("lcoh_dh_breakdown", {})
-                        st.json(dh_breakdown)
-                    with col2:
-                        st.markdown("**Heat Pump**")
-                        hp_breakdown = deterministic.get("lcoh_hp_breakdown", {})
-                        st.json(hp_breakdown)
+
+                # 4. COST BREAKDOWN (with marginal cost display)
+                st.markdown("### 💵 Cost Breakdown Comparison")
+                render_comparison_with_lv_upgrade(dh_data, hp_data)
+                st.divider()
+
+                # DH and HP detailed breakdowns
+                dh_col, hp_col = st.columns(2)
+                with dh_col:
+                    render_detailed_cost_breakdown(econ_for_ui, system_type="DH")
+                with hp_col:
+                    render_detailed_cost_breakdown(econ_for_ui, system_type="HP")
                 
                 # 5. SYSTEM INFO (expandable)
                 with st.expander("ℹ️ System Configuration"):

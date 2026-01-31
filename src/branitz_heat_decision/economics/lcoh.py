@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, Literal, Optional, Tuple
+from typing import Any, Dict, Literal, Optional, Tuple
 
 import numpy as np
 
@@ -18,51 +18,60 @@ PlantCostAllocation = Literal["full", "marginal", "proportional", "none"]
 
 @dataclass
 class PlantContext:
-    """
-    Shared plant context for marginal cost calculations.
-    Represents the district-level plant that may serve multiple clusters.
-    """
+    """Shared plant asset context for marginal cost calculations."""
 
     total_capacity_kw: float = 0.0  # Total plant thermal capacity (kW)
     total_cost_eur: float = 0.0  # Total plant CAPEX (sunk cost)
     utilized_capacity_kw: float = 0.0  # Already allocated/utilized capacity (kW)
     is_built: bool = False  # Whether plant exists (sunk) or is new
-    marginal_cost_per_kw_eur: float = 150.0  # Cost per kW for capacity expansion
-    safety_factor: float = 1.2  # Peak load safety margin
+    marginal_cost_per_kw: float = 150.0  # €/kW for capacity expansion
 
+    def get_marginal_allocation(
+        self, street_peak_load_kw: float, safety_factor: float = 1.2
+    ) -> Dict[str, Any]:
+        """
+        TRUE marginal cost: Only pay for capacity expansion, not full plant.
+
+        Args:
+            street_peak_load_kw: Design peak load for the street (kW)
+            safety_factor: Safety margin multiplier (default 1.2)
+
+        Returns:
+            Dict with allocated_eur, is_marginal, marginal_capacity_kw, rationale, method
+        """
+        required_capacity = street_peak_load_kw * safety_factor
+        spare_capacity = self.total_capacity_kw - self.utilized_capacity_kw
+
+        if spare_capacity >= required_capacity:
+            # Spare capacity available - NO COST (sunk cost principle)
+            return {
+                "allocated_eur": 0.0,
+                "allocated_cost": 0.0,  # backward compat
+                "is_marginal": False,
+                "marginal_capacity_kw": 0.0,
+                "rationale": f"Utilizes existing spare capacity ({spare_capacity:.0f}kW available, {required_capacity:.0f}kW needed)",
+                "method": "marginal",
+            }
+        else:
+            # Need expansion - pay only for the ADDITIONAL capacity
+            marginal_kw = required_capacity - spare_capacity
+            cost = marginal_kw * self.marginal_cost_per_kw
+
+            return {
+                "allocated_eur": cost,
+                "allocated_cost": cost,  # backward compat
+                "is_marginal": True,
+                "marginal_capacity_kw": marginal_kw,
+                "rationale": f"Marginal capacity expansion: {marginal_kw:.0f}kW @ {self.marginal_cost_per_kw}€/kW",
+                "method": "marginal",
+            }
+
+    # Backward compatibility alias
     def calculate_marginal_allocation(
         self, street_peak_load_kw: float
-    ) -> Dict[str, object]:
-        """
-        Calculate marginal plant cost allocation for a street cluster.
-        Returns dict with allocated_cost, is_marginal, rationale.
-        """
-        if not self.is_built:
-            return {
-                "allocated_cost": 0.0,
-                "is_marginal": False,
-                "rationale": "Plant not built - cost allocated at district aggregation level",
-            }
-
-        remaining_kw = self.total_capacity_kw - self.utilized_capacity_kw
-        required_kw = street_peak_load_kw * self.safety_factor
-
-        if required_kw <= remaining_kw:
-            return {
-                "allocated_cost": 0.0,
-                "is_marginal": False,
-                "utilized_share": required_kw / max(1e-9, self.total_capacity_kw),
-                "rationale": "Utilizes existing spare capacity (sunk cost)",
-            }
-
-        expansion_kw = required_kw - remaining_kw
-        expansion_cost = expansion_kw * self.marginal_cost_per_kw_eur
-        return {
-            "allocated_cost": expansion_cost,
-            "is_marginal": True,
-            "marginal_capacity_kw": expansion_kw,
-            "rationale": f"Street triggers {expansion_kw:.1f} kW capacity expansion",
-        }
+    ) -> Dict[str, Any]:
+        """Backward-compat wrapper for get_marginal_allocation."""
+        return self.get_marginal_allocation(street_peak_load_kw)
 
 
 def build_plant_context_from_params(params: EconomicParameters) -> Optional[PlantContext]:
@@ -74,8 +83,204 @@ def build_plant_context_from_params(params: EconomicParameters) -> Optional[Plan
         total_cost_eur=float(params.plant_cost_base_eur),
         utilized_capacity_kw=float(params.plant_utilized_capacity_kw),
         is_built=bool(params.plant_is_built),
-        marginal_cost_per_kw_eur=float(params.plant_marginal_cost_per_kw_eur),
+        marginal_cost_per_kw=float(params.plant_marginal_cost_per_kw_eur),
     )
+
+
+# --- Helper Functions for Network Cost Extraction ---
+
+
+def _extract_pipe_lengths(network_results: Dict[str, Any]) -> Dict[str, float]:
+    """
+    Extract pipe lengths from pandapipes network results.
+    Fixes the 'capex_pipes: 0' issue by properly parsing network output.
+    """
+    pipes = network_results.get("pipes", {})
+    lengths: Dict[str, float] = {}
+    for pipe_id, pipe_data in pipes.items():
+        if isinstance(pipe_data, dict):
+            dn = pipe_data.get("dn", "DN100")
+            length = pipe_data.get("length_m", 0)
+            lengths[dn] = lengths.get(dn, 0) + float(length)
+    return lengths
+
+
+def _calculate_lv_upgrade_cost(lv_results: Dict[str, Any]) -> float:
+    """
+    Calculate LV grid upgrade costs from pandapower/DHA analysis.
+
+    Accepts:
+    - total_reinforcement_cost_eur: direct cost from DHA reinforcement plan (preferred)
+    - transformer_upgrade_needed, cable_length_to_replace_m, new_connection_length_m:
+      granular fields for heuristic cost calculation
+    """
+    if not lv_results:
+        return 0.0
+
+    # Prefer direct DHA reinforcement total when available
+    direct_cost = lv_results.get("total_reinforcement_cost_eur", 0.0)
+    if direct_cost > 0:
+        return float(direct_cost)
+
+    # Fallback: heuristic from granular fields
+    costs = {
+        "transformer_upgrade": 15000.0,  # € per transformer
+        "cable_replacement": 50.0,  # € per meter
+        "new_connection": 200.0,  # € per meter
+    }
+
+    total = 0.0
+    if lv_results.get("transformer_upgrade_needed"):
+        total += costs["transformer_upgrade"]
+
+    total += lv_results.get("cable_length_to_replace_m", 0) * costs["cable_replacement"]
+    total += lv_results.get("new_connection_length_m", 0) * costs["new_connection"]
+
+    return total
+
+
+def _calculate_crf_local(rate: float, years: int) -> float:
+    """Local CRF calculator (fallback)."""
+    if rate == 0:
+        return 1.0 / years
+    return (rate * (1 + rate) ** years) / ((1 + rate) ** years - 1)
+
+
+# --- New Cluster-Level LCOH Function with Proper Marginal Cost ---
+
+
+def compute_lcoh_dh_for_cluster(
+    annual_heat_demand_mwh: float,
+    pipe_network_results: Dict[str, Any],
+    connection_length_m: float,
+    street_peak_load_kw: float,
+    plant_context: Optional[PlantContext] = None,
+    pump_cost_eur: float = 5000.0,
+    params: Optional[EconomicParameters] = None,
+    cost_allocation_method: Literal["marginal", "proportional", "none"] = "marginal",
+) -> Dict[str, Any]:
+    """
+    Compute LCOH for a street cluster with proper marginal cost accounting.
+
+    This function implements the Marginal Cost vs. Sunk Cost principle:
+    - Network costs are always included (street-specific)
+    - Plant costs only included if capacity expansion is triggered (marginal)
+    - LV upgrade costs extracted from power simulation results
+
+    Args:
+        annual_heat_demand_mwh: Annual heat demand for the cluster (MWh)
+        pipe_network_results: Dict from pandapipes simulation with 'pipes' and 'lv_results'
+        connection_length_m: Trunk connection length from plant to street (m)
+        street_peak_load_kw: Design peak load for the street (kW)
+        plant_context: Shared plant context (for marginal allocation)
+        pump_cost_eur: Street-specific pump cost (€)
+        params: Economic parameters (uses defaults if None)
+        cost_allocation_method: 'marginal', 'proportional', or 'none'
+
+    Returns:
+        Dict with lcoh_eur_per_mwh, capex breakdown, plant allocation details
+    """
+    if params is None:
+        from .params import get_default_economics_params
+
+        params = get_default_economics_params()
+
+    if annual_heat_demand_mwh <= 0:
+        return {
+            "lcoh_eur_per_mwh": float("inf"),
+            "capex_total": 0.0,
+            "error": "Annual heat demand must be positive",
+        }
+
+    # --- 1. EXTRACT PIPE COSTS from network results ---
+    pipe_lengths_m = _extract_pipe_lengths(pipe_network_results)
+
+    capex_network = 0.0
+    if pipe_lengths_m:
+        for dn, length in pipe_lengths_m.items():
+            cost_per_m = params.pipe_cost_eur_per_m.get(str(dn), 300.0)
+            capex_network += length * cost_per_m
+    else:
+        # Fallback: use total pipe length if available
+        total_length = pipe_network_results.get("total_pipe_length_m", 0.0)
+        avg_cost = float(np.mean(list(params.pipe_cost_eur_per_m.values())))
+        capex_network = total_length * avg_cost
+
+    # --- 2. Connection cost ---
+    default_pipe_cost = params.pipe_cost_eur_per_m.get("DN100", 300.0)
+    capex_connection = connection_length_m * default_pipe_cost
+
+    # --- 3. PLANT COST - MARGINAL LOGIC ---
+    capex_plant = 0.0
+    plant_info: Dict[str, Any] = {
+        "method": cost_allocation_method,
+        "allocated_eur": 0.0,
+        "rationale": "No allocation",
+    }
+
+    if plant_context and cost_allocation_method == "marginal":
+        # TRUE marginal cost - only expansion costs
+        allocation = plant_context.get_marginal_allocation(street_peak_load_kw)
+        capex_plant = allocation["allocated_eur"]
+        plant_info = allocation
+
+    elif plant_context and cost_allocation_method == "proportional":
+        # Proportional - for comparison only (not recommended for street-level)
+        share = (
+            street_peak_load_kw / plant_context.total_capacity_kw
+            if plant_context.total_capacity_kw > 0
+            else 0
+        )
+        capex_plant = share * plant_context.total_cost_eur
+        plant_info = {
+            "allocated_eur": capex_plant,
+            "method": "proportional",
+            "capacity_share_frac": share,
+            "rationale": f"Proportional: {share*100:.1f}% of total plant cost",
+        }
+
+    # --- 4. LV GRID UPGRADE COSTS ---
+    lv_upgrade_cost = _calculate_lv_upgrade_cost(
+        pipe_network_results.get("lv_results", {})
+    )
+
+    # --- 5. Total CAPEX ---
+    total_capex = (
+        capex_network + capex_connection + capex_plant + pump_cost_eur + lv_upgrade_cost
+    )
+
+    # --- 6. OPEX: Only network O&M (2%), NOT plant O&M ---
+    opex_om_network = capex_network * params.dh_om_frac_per_year
+    # Heat purchase cost (simplified)
+    heat_price_eur_per_mwh = 50.0  # Default heat purchase price
+    opex_energy = annual_heat_demand_mwh * heat_price_eur_per_mwh
+    total_opex = opex_om_network + opex_energy
+
+    # --- 7. LCOH ---
+    crf_val = crf(float(params.discount_rate), int(params.lifetime_years))
+    annualized = total_capex * crf_val + total_opex
+    lcoh = annualized / annual_heat_demand_mwh
+
+    return {
+        "lcoh_eur_per_mwh": round(lcoh, 2),
+        "capex_total": round(total_capex, 2),
+        "capex_breakdown": {
+            "network_pipes": round(capex_network, 2),
+            "connection": round(capex_connection, 2),
+            "plant_allocated": round(capex_plant, 2),
+            "pump": round(pump_cost_eur, 2),
+            "lv_upgrade": round(lv_upgrade_cost, 2),
+        },
+        "opex_annual": round(total_opex, 2),
+        "opex_breakdown": {
+            "network_om": round(opex_om_network, 2),
+            "energy": round(opex_energy, 2),
+        },
+        "plant_allocation": plant_info,
+        "crf": round(crf_val, 6),
+        "annual_heat_mwh": annual_heat_demand_mwh,
+        "methodology": "Marginal cost: Only incremental network/capacity costs included",
+    }
 
 
 @dataclass(frozen=True)
