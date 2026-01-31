@@ -8,7 +8,7 @@ import numpy as np
 
 from .co2 import compute_co2_dh, compute_co2_hp
 from .lcoh import DHInputs, HPInputs, lcoh_dh_crf, lcoh_hp_crf
-from .lcoh import compute_lcoh_dh, compute_lcoh_hp
+from .lcoh import build_plant_context_from_params, compute_lcoh_dh, compute_lcoh_hp
 from .params import EconomicParameters, EconomicsParams, MonteCarloParams, apply_multipliers
 from .utils import percentile
 
@@ -89,7 +89,9 @@ def run_monte_carlo(
             discount_rate=discount_rate,
         )
 
-        l_dh = lcoh_dh_crf(dh_inputs, p)
+        l_dh = lcoh_dh_crf(
+            dh_inputs, p, street_peak_load_kw=hp_inputs.hp_total_capacity_kw_th
+        )
         l_hp = lcoh_hp_crf(hp_inputs, p)
         # Annual totals in t/a derived from specific kg/MWh and annual MWh.
         c_dh_kg_per_mwh, c_dh_br = compute_co2_dh(dh_inputs.heat_mwh_per_year, params=p)
@@ -248,6 +250,13 @@ def _run_one_sample_for_cluster(
         dh_om_frac_per_year=p.dh_om_frac_per_year,
         hp_om_frac_per_year=p.hp_om_frac_per_year,
         feeder_loading_planning_limit=p.feeder_loading_planning_limit,
+        # Plant cost allocation (Marginal Cost vs. Sunk Cost)
+        plant_cost_allocation=getattr(p, "plant_cost_allocation", "full"),
+        plant_total_capacity_kw=getattr(p, "plant_total_capacity_kw", 0.0),
+        plant_utilized_capacity_kw=getattr(p, "plant_utilized_capacity_kw", 0.0),
+        plant_is_built=getattr(p, "plant_is_built", False),
+        plant_marginal_cost_per_kw_eur=getattr(p, "plant_marginal_cost_per_kw_eur", 150.0),
+        district_total_design_capacity_kw=getattr(p, "district_total_design_capacity_kw", 0.0),
     )
 
     pipe_cost_adj = float(sampled_params.get("pipe_cost_multiplier", 1.0))
@@ -259,6 +268,7 @@ def _run_one_sample_for_cluster(
             }
         )
 
+    plant_ctx = build_plant_context_from_params(sample_params)
     try:
         lcoh_dh, _ = compute_lcoh_dh(
             annual_heat_mwh=annual_heat_mwh,
@@ -266,6 +276,10 @@ def _run_one_sample_for_cluster(
             total_pipe_length_m=total_length_m,
             pump_power_kw=pump_power_kw,
             params=sample_params,
+            plant_cost_allocation=sample_params.plant_cost_allocation,
+            plant_context=plant_ctx,
+            street_peak_load_kw=hp_capacity_kw,
+            district_total_design_capacity_kw=sample_params.district_total_design_capacity_kw or None,
         )
     except Exception as e:
         logger.debug("Sample %d: DH LCOH failed: %s", sample_id, e)

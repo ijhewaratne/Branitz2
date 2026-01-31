@@ -207,9 +207,9 @@ class CHAAgent(BaseADKAgent):
     def run(
         self,
         use_trunk_spur: bool = True,
-        plant_wgs84_lat: Optional[float] = None,
-        plant_wgs84_lon: Optional[float] = None,
-        disable_auto_plant_siting: bool = False,
+        plant_wgs84_lat: Optional[float] = 51.76274,
+        plant_wgs84_lon: Optional[float] = 14.3453979,
+        disable_auto_plant_siting: bool = True,
         optimize_convergence: bool = True,
     ) -> AgentAction:
         """
@@ -217,9 +217,9 @@ class CHAAgent(BaseADKAgent):
         
         Args:
             use_trunk_spur: Use trunk-spur network builder (default: True)
-            plant_wgs84_lat: Fixed plant latitude (WGS84)
-            plant_wgs84_lon: Fixed plant longitude (WGS84)
-            disable_auto_plant_siting: Disable automatic re-siting
+            plant_wgs84_lat: Fixed plant latitude (WGS84, default: Cottbus CHP)
+            plant_wgs84_lon: Fixed plant longitude (WGS84, default: Cottbus CHP)
+            disable_auto_plant_siting: Disable automatic re-siting (default: True)
             optimize_convergence: Enable convergence optimization
         """
         action = self._execute_tool(
@@ -424,9 +424,9 @@ class BranitzADKAgent(BaseADKAgent):
     def run_cha(
         self,
         use_trunk_spur: bool = True,
-        plant_wgs84_lat: Optional[float] = None,
-        plant_wgs84_lon: Optional[float] = None,
-        disable_auto_plant_siting: bool = False,
+        plant_wgs84_lat: Optional[float] = 51.76274,
+        plant_wgs84_lon: Optional[float] = 14.3453979,
+        disable_auto_plant_siting: bool = True,
         optimize_convergence: bool = True,
     ) -> AgentAction:
         agent = CHAAgent(cluster_id=self.cluster_id, enforce_policies=self.enforce_policies, verbose=self.verbose)

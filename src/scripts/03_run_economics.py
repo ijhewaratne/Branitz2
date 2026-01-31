@@ -48,6 +48,7 @@ from branitz_heat_decision.economics import (
     co2_hp,
     run_monte_carlo,
 )
+from branitz_heat_decision.economics.lcoh import build_plant_context_from_params
 from branitz_heat_decision.economics.co2 import DHCO2Inputs, HPCO2Inputs
 
 
@@ -186,6 +187,13 @@ def main() -> None:
     ap.add_argument("--cluster-id", required=True, type=str)
     ap.add_argument("--n", type=int, default=500, help="Monte Carlo samples (default 500)")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument(
+        "--plant-cost-allocation",
+        type=str,
+        default="full",
+        choices=["full", "marginal", "proportional", "none"],
+        help="Plant cost allocation: full (default), marginal, proportional, none",
+    )
     ap.add_argument("--sensitivity", action="store_true", help="Run sensitivity analysis (±5% parameter variations)")
     ap.add_argument("--stress-tests", action="store_true", help="Run stress test scenarios")
     ap.add_argument("--full-validation", action="store_true", help="Run all validation: Monte Carlo + Sensitivity + Stress Tests")
@@ -197,7 +205,10 @@ def main() -> None:
     annual_heat_mwh = _load_annual_heat_mwh(cluster_building_ids)
     design_capacity_kw = _load_design_capacity_kw(cluster_building_ids, design_hour)
 
+    from dataclasses import replace
+
     params = get_default_economics_params()
+    params = replace(params, plant_cost_allocation=args.plant_cost_allocation)
 
     lengths = _load_dh_lengths_m_from_cha(cluster_id)
     pipe_lengths_by_dn = _load_pipe_lengths_by_dn_from_cha(cluster_id)
@@ -219,12 +230,17 @@ def main() -> None:
         max_feeder_loading_pct=max_feeder_loading_pct,
     )
 
+    plant_ctx = build_plant_context_from_params(params)
     lcoh_dh, lcoh_dh_breakdown = compute_lcoh_dh(
         annual_heat_mwh=annual_heat_mwh,
         pipe_lengths_by_dn=pipe_lengths_by_dn or None,
         total_pipe_length_m=total_pipe_length_m,
         pump_power_kw=pump_power_kw,
         params=params,
+        plant_cost_allocation=params.plant_cost_allocation,
+        plant_context=plant_ctx,
+        street_peak_load_kw=design_capacity_kw,
+        district_total_design_capacity_kw=params.district_total_design_capacity_kw or None,
     )
     lcoh_hp, lcoh_hp_breakdown = compute_lcoh_hp(
         annual_heat_mwh=annual_heat_mwh,
@@ -282,6 +298,8 @@ def main() -> None:
             "ef_gas_kg_per_mwh": params.ef_gas_kg_per_mwh,
             "ef_biomass_kg_per_mwh": params.ef_biomass_kg_per_mwh,
             "feeder_loading_planning_limit": params.feeder_loading_planning_limit,
+        "plant_cost_allocation": params.plant_cost_allocation,
+        "plant_allocation": lcoh_dh_breakdown.get("plant_allocation", {}),
         },
     }
 

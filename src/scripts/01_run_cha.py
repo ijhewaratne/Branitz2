@@ -749,19 +749,24 @@ Examples:
     parser.add_argument(
         '--plant-wgs84-lat',
         type=float,
-        default=None,
-        help='Fixed plant latitude in WGS84 (EPSG:4326). Example: 51.76274'
+        default=51.76274,
+        help='Fixed plant latitude in WGS84 (EPSG:4326). Default: 51.76274 (Cottbus CHP)'
     )
     parser.add_argument(
         '--plant-wgs84-lon',
         type=float,
-        default=None,
-        help='Fixed plant longitude in WGS84 (EPSG:4326). Example: 14.3453979'
+        default=14.3453979,
+        help='Fixed plant longitude in WGS84 (EPSG:4326). Default: 14.3453979 (Cottbus CHP)'
+    )
+    parser.add_argument(
+        '--enable-auto-plant-siting',
+        action='store_true',
+        help='Override: use automatic plant siting instead of fixed CHP coordinates.'
     )
     parser.add_argument(
         '--disable-auto-plant-siting',
         action='store_true',
-        help='Disable automatic re-siting of plant to a nearby different street (use provided plant coords as-is).'
+        help='Disable automatic re-siting of plant (auto-set when using fixed coordinates).'
     )
     
     parser.add_argument(
@@ -786,6 +791,10 @@ Examples:
         output_dir = Path(args.output_dir) if args.output_dir else None
         catalog_path = Path(args.catalog) if args.catalog else None
         
+        # Fixed CHP plant location (default). Override with --enable-auto-plant-siting.
+        plant_lat = None if args.enable_auto_plant_siting else args.plant_wgs84_lat
+        plant_lon = None if args.enable_auto_plant_siting else args.plant_wgs84_lon
+        
         results = run_cha_pipeline(
             cluster_id=args.cluster_id,
             attach_mode=args.attach_mode,
@@ -795,8 +804,8 @@ Examples:
             use_trunk_spur=args.use_trunk_spur,
             catalog_path=catalog_path,
             max_spur_length_m=args.max_spur_length,
-            plant_wgs84_lat=args.plant_wgs84_lat,
-            plant_wgs84_lon=args.plant_wgs84_lon,
+            plant_wgs84_lat=plant_lat,
+            plant_wgs84_lon=plant_lon,
             disable_auto_plant_siting=args.disable_auto_plant_siting,
         )
         

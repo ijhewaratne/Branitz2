@@ -1,0 +1,1201 @@
+
+        {
+        "de.adv-online.gid":{
+        
+        
+        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform" 
+        
+            ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform:1"
+        
+            ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform"
+           
+        ,"language":"de",
+        
+            "label":{
+            "lang":"de",
+            "text":"AX_Dachform"
+            },
+        
+        "itemclass":{
+        "id":"CodeList_de.adv-online.gid",
+        "label":{
+        "lang":"de",
+        "text":"Codeliste de.adv-online.gid"
+        }
+        },
+        "status":{
+        "id":" https://registry.gdi-de.org/codelist/status/valid",
+        "label":{
+        "lang":"de",
+        "text":"Gültig"
+        }
+        }
+                            
+                        ,"governance-level":{                        
+                        "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                        "label":{
+                        "lang":"de",
+                        "text":"national-technical"
+                        }
+                        } 
+                     
+        ,"register":{
+        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+        "label":{
+        "lang":"de",
+        "text":"GeoInfoDok (AdV)"
+        },
+        "registry":{
+        "id":"https://registry.gdi-de.org/codelist",
+        "label":{
+        "lang":"de",
+        "text":"GDI-DE Registry"
+        }
+        }
+        }
+        
+                ,"containeditems":[
+                
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/1000" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/1000:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/1000"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Flachdach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Flachdächer sind Dächer, die keine oder nureine geringe Dachneigung bis zu 10° (17,6%) aufweisen."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"1000"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/2100" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/2100:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/2100"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Pultdach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Pultdach ist ein Dach mit nur einer geneigten Dachfläche. Die untere Kante bildet die Dachtraufe, die obere den Dachfirst. Die Neigung des Pultdaches beträgt mindestens 10°."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"2100"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/2200" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/2200:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/2200"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Versetztes Pultdach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein versetztes Pultdach besteht aus zwei Pultdächern, deren Firste in der Höhe versetzt sind. Zwischen den Dachflächen entsteht immer eine Wandfläche."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"2200"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3100" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3100:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3100"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Satteldach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Das Satteldach besteht aus zwei entgegengesetzt geneigten Dachflächen, die am Dachfirst aufeinander treffen."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3100"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3200" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3200:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3200"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Walmdach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Walmdach hat nicht nur auf der Traufseite, sondern auch auf der Giebelseite geneigte Dachflächen, die als Walm bezeichnet werden. Ein vollständiger Walm ersetzt den Giebel und hat eine einheitliche Traufhöhe, das Dach hat also an allen vier Seiten Schrägen. In Abgrenzung zum Zeltdach besitzt ein Walmdach immer einen Dachfirst."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3200"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3300" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3300:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3300"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Krüppelwalmdach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Walm, dessen Traufe oberhalb der Traufe des Hauptdaches liegt, bildet ein Krüppelwalmdach. Es bleibt ein trapezförmiger Restgiebel erhalten."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3300"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3400" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3400:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3400"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Mansardendach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Bei der Dachform Mansardendach sind die Dachflächen im unteren Bereich abgeknickt, so dass die untere Dachfläche über eine wesentlich steilere Neigung verfügt als die obere."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3400"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3500" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3500:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3500"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Zeltdach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Zeltdach zeichnet sich durch mindestens drei gegeneinander geneigte Dachflächen aus, die in einer Spitze zusammenlaufen. Abgrenzung zum Turmdach: Neigung des Zeltdachs &lt; 45°."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3500"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3600" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3600:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3600"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Kegeldach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Kegeldach ist eine Dachform, die einem Kreiskegel entspricht."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3600"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3700" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3700:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3700"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Kuppeldach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Kuppeldach beschreibt eine halbkugel- oder glockenförmige Dachform."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3700"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3800" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3800:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3800"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Sheddach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Sheddach ist eine Dachform, bei der mehrere gleichartige pult- oder satteldachartige Dachaufbauten hintereinander angereiht werden."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3800"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3900" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3900:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/3900"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Bogendach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Bogendach besitzt eine Wölbung die kreis- oder elliptische Formen annehmen kann."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"3900"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/4000" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/4000:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/4000"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Turmdach"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Ein Turmdach ist ein Zeltdach mit einer Neigung von mehr als 45°."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"4000"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/5000" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/5000:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/5000"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Mischform"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Die Dachform Mischform setzt sich aus mehreren Standarddachformen zusammen, wobei keine Dachform überwiegt."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"5000"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                            , 
+                        
+                    {        
+                    "value":{
+                    
+                            "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/9999" 
+                        
+                        ,"thisversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/9999:1"
+                    
+                        ,"latestversion":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform/9999"
+                    
+                        ,"label":{
+                        "lang":"de",
+                        "text":"Sonstiges"
+                        }
+                    
+                        ,"definition":{
+                        "lang":"de",
+                        "text":"Sonstiges Dach ist eine Dachform, die auch durch eine Zerlegung in Standarddachformen nicht modelliert werden kann."
+                        }
+                    
+                        ,"CodeListValue_Local_Id":{
+                        "text":"9999"
+                        }
+                    
+                        ,"itemclass":{
+                        "id":"CodeListValue_de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Codelistenwert de.adv-online.gid"
+                        }
+                        }
+                    
+                        ,"status":{
+                        "id":"https://registry.gdi-de.org/codelist/status/valid",
+                        "label":{
+                        "lang":"de",
+                        "text":"Gültig"
+                        }
+                        }
+                    
+                        ,"register":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid",
+                        "label":{
+                        "lang":"de",
+                        "text":"GeoInfoDok (AdV)"
+                        },
+                        "registry":{
+                        "id":"https://registry.gdi-de.org/codelist",
+                        "label":{
+                        "lang":"de",
+                        "text":"GDI-DE Registry"
+                        }
+                        }
+                        }
+                                        
+                                    ,"governance-level":{                        
+                                    "id":"https://registry.gdi-de.org/codelist/governance-level/national-technical",
+                                    "label":{
+                                    "lang":"de",
+                                    "text":"national-technical"
+                                    }
+                                    } 
+                                
+                        ,"de.adv-online.gid":{
+                        "id":"https://registry.gdi-de.org/codelist/de.adv-online.gid/AX_Dachform",
+                        
+                        "label":{
+                        "lang":"de",
+                        "text":"AX_Dachform"
+                        }
+                        }
+                                                            
+                    }
+                    }
+                    
+                ]            
+            
+        }
+        }
+    

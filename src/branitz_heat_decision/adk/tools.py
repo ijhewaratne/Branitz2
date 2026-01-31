@@ -96,12 +96,17 @@ def prepare_data_tool(
         }
 
 
+# Default CHP plant location (Cottbus) - used whenever CHA is run
+DEFAULT_PLANT_LAT = 51.76274
+DEFAULT_PLANT_LON = 14.3453979
+
+
 def run_cha_tool(
     cluster_id: str,
     use_trunk_spur: bool = True,
-    plant_wgs84_lat: Optional[float] = None,
-    plant_wgs84_lon: Optional[float] = None,
-    disable_auto_plant_siting: bool = False,
+    plant_wgs84_lat: Optional[float] = DEFAULT_PLANT_LAT,
+    plant_wgs84_lon: Optional[float] = DEFAULT_PLANT_LON,
+    disable_auto_plant_siting: bool = True,
     optimize_convergence: bool = True,
     verbose: bool = False,
 ) -> Dict[str, Any]:
@@ -133,9 +138,11 @@ def run_cha_tool(
     
     if use_trunk_spur:
         cmd.append("--use-trunk-spur")
-    if plant_wgs84_lat is not None and plant_wgs84_lon is not None:
-        cmd.extend(["--plant-wgs84-lat", str(plant_wgs84_lat)])
-        cmd.extend(["--plant-wgs84-lon", str(plant_wgs84_lon)])
+    # Fixed CHP plant location (default) - always pass unless explicitly overridden
+    lat = DEFAULT_PLANT_LAT if plant_wgs84_lat is None else plant_wgs84_lat
+    lon = DEFAULT_PLANT_LON if plant_wgs84_lon is None else plant_wgs84_lon
+    cmd.extend(["--plant-wgs84-lat", str(lat)])
+    cmd.extend(["--plant-wgs84-lon", str(lon)])
     if disable_auto_plant_siting:
         cmd.append("--disable-auto-plant-siting")
     if optimize_convergence:

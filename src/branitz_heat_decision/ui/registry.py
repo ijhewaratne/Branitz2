@@ -11,7 +11,10 @@ SCENARIO_REGISTRY = {
             "{python}", "src/scripts/01_run_cha.py", 
             "--cluster-id", "{cluster_id}",
             "--use-trunk-spur",  # Default: use trunk-spur builder (required for convergence)
-            "--optimize-convergence"  # Default: optimize for numerical stability
+            "--optimize-convergence",  # Default: optimize for numerical stability
+            "--plant-wgs84-lat", "51.76274",  # Fixed Cottbus CHP (default)
+            "--plant-wgs84-lon", "14.3453979",
+            "--disable-auto-plant-siting"
         ],
         "kwargs_map": {
             # Additional kwargs can be added here, but trunk-spur is now always used
@@ -43,6 +46,7 @@ SCENARIO_REGISTRY = {
         "command_template": [
             "{python}", "src/scripts/03_run_economics.py", 
             "--cluster-id", "{cluster_id}",
+            "--plant-cost-allocation", "marginal",
             "--full-validation"  # Default: run all validation
         ],
         "kwargs_map": {
@@ -70,6 +74,7 @@ SCENARIO_REGISTRY = {
         "outputs": [
             "results/decision/{cluster_id}/decision_{cluster_id}.json"
         ],
+        "dependencies": ["cha", "dha", "economics"],
         "estimated_runtime": "fast"
     },
     "uhdc": {
@@ -77,7 +82,9 @@ SCENARIO_REGISTRY = {
         "description": "Compiles all findings into a comprehensive HTML report suitable for stakeholders.",
         "command_template": [
             "{python}", "-m", "branitz_heat_decision.cli.uhdc", 
-            "--cluster-id", "{cluster_id}"
+            "--cluster-id", "{cluster_id}",
+            "--out-dir", "results/uhdc/{cluster_id}",
+            "--llm"
         ],
         "kwargs_map": {
             "llm": "--llm"
@@ -85,6 +92,7 @@ SCENARIO_REGISTRY = {
         "outputs": [
             "results/uhdc/{cluster_id}/uhdc_report_{cluster_id}.html"
         ],
+        "dependencies": ["decision"],
         "estimated_runtime": "medium"
     }
 }

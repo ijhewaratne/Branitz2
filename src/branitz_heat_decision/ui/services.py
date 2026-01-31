@@ -222,19 +222,47 @@ class JobService:
         self.lock = threading.Lock()
         
     def start_job(self, scenario: str, cluster_id: str, **kwargs) -> str:
-        """Start a simulation job in the background."""
+        """Start a simulation job in the background, with dependency resolution."""
         job_id = f"{scenario}_{cluster_id}_{int(time.time())}"
         
+        # 1. Check & Queue Dependencies
+        wait_list = []
+        if scenario in SCENARIO_REGISTRY:
+            deps = SCENARIO_REGISTRY[scenario].get("dependencies", [])
+            if deps:
+                # Need ResultService to check valid results
+                rs = ResultService() 
+                status = rs.get_result_status(cluster_id)
+                
+                for dep in deps:
+                    # If result exists, we don't need to re-run
+                    if status.get(dep):
+                        continue
+                        
+                    # Check if already running
+                    existing = self.get_latest_job_for_cluster(cluster_id)
+                    dep_running_id = None
+                    if existing and existing.get("scenario") == dep and existing.get("status") == "running":
+                        dep_running_id = existing["id"]
+                    
+                    if dep_running_id:
+                        wait_list.append(dep_running_id)
+                    else:
+                        # Auto-start missing dependency
+                        logger.info(f"Auto-starting dependency {dep} for {job_id}")
+                        new_dep_id = self.start_job(dep, cluster_id)
+                        wait_list.append(new_dep_id)
+
         cmd = self._build_command(scenario, cluster_id, **kwargs)
         
         log_dir = RESULTS_DIR / "jobs"
         log_dir.mkdir(parents=True, exist_ok=True)
         log_file = log_dir / f"{job_id}.log"
         
-        thread = threading.Thread(target=self._run_process, args=(job_id, cmd, log_file, scenario, cluster_id))
+        # Pass wait_list to process
+        thread = threading.Thread(target=self._run_process, args=(job_id, cmd, log_file, scenario, cluster_id, wait_list))
         thread.start()
 
-        
         with self.lock:
             self.jobs[job_id] = {
                 "id": job_id,
@@ -243,7 +271,8 @@ class JobService:
                 "status": "running",
                 "start_time": datetime.now(),
                 "log_file": str(log_file),
-                "cmd": cmd
+                "cmd": cmd,
+                "waiting_for": wait_list
             }
             
         return job_id
@@ -269,9 +298,39 @@ class JobService:
                  
         return cmd
 
-    def _run_process(self, job_id: str, cmd: List[str], log_file: Path, scenario: str, cluster_id: str):
+    def _run_process(self, job_id: str, cmd: List[str], log_file: Path, scenario: str, cluster_id: str, wait_list: List[str] = None):
         try:
             with open(log_file, "w") as f:
+                # 0. Wait for dependencies
+                if wait_list:
+                    f.write(f"Waiting for dependencies: {wait_list}\n")
+                    f.flush()
+                    while True:
+                        all_done = True
+                        failed = False
+                        for dep_id in wait_list:
+                            dep_stat = self.get_job_status(dep_id)
+                            # If job not found, assume finished/expired?? Safe to assume active tracking.
+                            if not dep_stat: continue 
+                            
+                            status = dep_stat.get("status", "unknown")
+                            if status in ["failed", "error"]:
+                                failed = True
+                                f.write(f"Dependency {dep_id} failed. Aborting.\n")
+                                break
+                            if status != "completed":
+                                all_done = False
+                        
+                        if failed:
+                            raise Exception("Dependencies failed")
+                        
+                        if all_done:
+                            f.write("All dependencies completed. Starting main process.\n")
+                            f.flush()
+                            break
+                        
+                        time.sleep(2)
+
                 # Need to set PYTHONPATH to src so scripts can import modules
                 env = os.environ.copy()
                 src_path = str(Path(__file__).parents[2]) # src/branitz.../ui/ -> src

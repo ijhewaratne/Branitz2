@@ -489,9 +489,22 @@ if selected_cluster_id:
                             st.json(json.load(open(art)))
             else:
                 st.warning("CHA analysis not started")
-                if st.button("Run CHA Analysis", key="run_cha_feasibility"):
-                    services["job"].start_job("cha", selected_cluster_id)
+                
+                # Check for running job
+                latest_job = services["job"].get_latest_job_for_cluster(selected_cluster_id)
+                is_running = False
+                if latest_job and latest_job.get("scenario") == "cha" and latest_job.get("status") == "running":
+                    is_running = True
+
+                if is_running:
+                    st.info("⏳ CHA Analysis in progress...", icon="🏃")
+                    if st.button("Analysis Running...", disabled=True, key="run_cha_feasibility_disabled"): pass
+                    time.sleep(2)
                     st.rerun()
+                else:
+                    if st.button("Run CHA Analysis", key="run_cha_feasibility"):
+                        services["job"].start_job("cha", selected_cluster_id)
+                        st.rerun()
 
         with dha_tab:
             st.subheader("Heat Pump Grid Hosting Analysis")
@@ -655,9 +668,22 @@ if selected_cluster_id:
                             st.json(json.load(open(art)))
             else:
                 st.warning("DHA analysis not started")
-                if st.button("Run DHA Analysis", key="run_dha_feasibility"):
-                    services["job"].start_job("dha", selected_cluster_id)
+                
+                # Check for running job
+                latest_job = services["job"].get_latest_job_for_cluster(selected_cluster_id)
+                is_running = False
+                if latest_job and latest_job.get("scenario") == "dha" and latest_job.get("status") == "running":
+                    is_running = True
+
+                if is_running:
+                    st.info("⏳ DHA Analysis in progress...", icon="🏃")
+                    if st.button("Analysis Running...", disabled=True, key="run_dha_feasibility_disabled"): pass
+                    time.sleep(2)
                     st.rerun()
+                else:
+                    if st.button("Run DHA Analysis", key="run_dha_feasibility"):
+                        services["job"].start_job("dha", selected_cluster_id)
+                        st.rerun()
 
     # -- Tab: Economics --
     with tab_economics:

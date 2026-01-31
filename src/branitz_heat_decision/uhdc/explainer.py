@@ -266,7 +266,7 @@ def _build_constrained_prompt(
     # Extract key metrics for easy reference
     dh = contract['district_heating']
     hp = contract['heat_pumps']
-    mc = contract.get('monte_carlo', {})
+    mc = contract.get('monte_carlo') or {}
     
     # Format metrics with units
     metrics_section = f"""
@@ -454,7 +454,7 @@ def _validate_explanation_safety(
         pass
     
     # Add MC fractions
-    mc = contract.get('monte_carlo', {})
+    mc = contract.get('monte_carlo') or {}
     if mc:
         _add_number(mc.get('dh_wins_fraction', 0) * 100)  # As percentage
         _add_number(mc.get('hp_wins_fraction', 0) * 100)
