@@ -1,2 +1,0 @@
-"""UHDC module tests."""
-
