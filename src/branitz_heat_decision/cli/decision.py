@@ -87,7 +87,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--econ-summary-path", dest="econ_summary", help="Path to economics summary JSON")
     parser.add_argument("--output-dir", dest="out_dir", help="Output directory")
 
-    parser.add_argument("--llm-explanation", action="store_true", help="Generate LLM explanation (requires API key)")
+    parser.add_argument("--llm-explanation", action="store_true", help="[Deprecated] LLM is always used for executive summary")
+    parser.add_argument("--template-only", action="store_true", help="Skip LLM and use template for explanation (overrides default)")
     parser.add_argument(
         "--explanation-style",
         default="executive",
@@ -179,8 +180,8 @@ def main() -> None:
         print(f"Loaded custom decision config: {args.config}")
         config = validate_config(config)
 
-    # LLM status (only relevant if we intend to generate an explanation)
-    if args.llm_explanation and args.format in ("md", "html", "all"):
+    # LLM status (always use LLM for executive summary unless --template-only)
+    if args.format in ("md", "html", "all") and not args.template_only:
         if UHDC_FORCE_TEMPLATE:
             print("ℹ️  LLM disabled: UHDC_FORCE_TEMPLATE=true (template mode forced).")
         elif not LLM_AVAILABLE:
@@ -190,7 +191,7 @@ def main() -> None:
             print("⚠️  Warning: GOOGLE_API_KEY not found in environment or .env.")
             print("   LLM explanations will use fallback template. Create .env: echo 'GOOGLE_API_KEY=your_key' > .env")
         else:
-            print(f"✅ LLM enabled: {GOOGLE_MODEL_DEFAULT}")
+            print(f"✅ LLM enabled for executive summary: {GOOGLE_MODEL_DEFAULT}")
 
         if args.no_fallback and not LLM_READY:
             print("❌ Error: --no-fallback specified but LLM is unavailable/disabled.", file=sys.stderr)
@@ -246,10 +247,12 @@ def main() -> None:
                 save_json(contract, contract_path)
                 save_json(decision_result.to_dict(), decision_path)
 
-                # Explanation only if requested format requires it
+                # Explanation only if requested format requires it (always use LLM unless --template-only)
                 explanation = None
                 if args.format in ("md", "html", "all"):
-                    if args.llm_explanation:
+                    if args.template_only:
+                        explanation = _fallback_template_explanation(contract, decision_result.to_dict(), args.explanation_style)
+                    else:
                         try:
                             explanation = explain_with_llm(
                                 contract,
@@ -262,8 +265,6 @@ def main() -> None:
                                 raise
                             explanation = _fallback_template_explanation(contract, decision_result.to_dict(), args.explanation_style)
                             print(f"! {cid}: LLM explanation failed, used template fallback ({e})")
-                    else:
-                        explanation = _fallback_template_explanation(contract, decision_result.to_dict(), args.explanation_style)
 
                     _write_explanation_outputs(out_dir, cid, contract, decision_result.to_dict(), explanation, args.format)
 
@@ -354,10 +355,13 @@ def main() -> None:
     print(f"✓ Decision: {decision_result.choice} (robust: {decision_result.robust})")
     print(f"  Reasons: {', '.join(decision_result.reason_codes)}")
     
-    # Explanation only if requested format requires it
+    # Explanation only if requested format requires it (always use LLM unless --template-only)
     if args.format in ("md", "html", "all"):
         print("\nGenerating explanation...")
-        if args.llm_explanation:
+        if args.template_only:
+            explanation = _fallback_template_explanation(contract, decision_result.to_dict(), args.explanation_style)
+            print("ℹ️  Using template (--template-only)")
+        else:
             try:
                 explanation = explain_with_llm(
                     contract,
@@ -370,8 +374,6 @@ def main() -> None:
                     raise
                 explanation = _fallback_template_explanation(contract, decision_result.to_dict(), args.explanation_style)
                 print(f"! LLM explanation failed, used template fallback ({e})")
-        else:
-            explanation = _fallback_template_explanation(contract, decision_result.to_dict(), args.explanation_style)
 
         # NEW: Validate explanation using TNLI Logic Auditor
         try:

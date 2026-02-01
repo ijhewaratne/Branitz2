@@ -878,9 +878,27 @@ if selected_cluster_id:
                     st.info(f"✅ Heat Pump is {-diff_pct:.1f}% cheaper")
                 else:
                     st.warning("⚖️ Costs are equal")
-                
+
+                # Cottbus CHP Plant Context (when available)
+                plant_status = deterministic.get("plant_capacity_status")
+                if plant_status:
+                    st.markdown("---")
+                    st.subheader("🏭 Cottbus CHP Plant Context (Shared Asset)")
+                    col1, col2, col3 = st.columns(3)
+                    col1.metric("Plant Capacity", f"{plant_status.get('total_plant_kw', 0)/1000:.0f} MW")
+                    col2.metric("Available for New Streets", f"{plant_status.get('available_kw', 0)/1000:.0f} MW")
+                    col3.metric("This Street's Share", f"{plant_status.get('street_share_pct', 0):.2f}%")
+                    pa = dh_breakdown.get("plant_allocation", {})
+                    rationale = pa.get("rationale", "")
+                    st.info(
+                        f"**Marginal Cost Principle Applied**\n\n"
+                        f"- Plant: Cottbus CHP (Stadtwerke Cottbus GmbH)\n"
+                        f"- Fuel: Natural Gas (switched from coal Sept 2022)\n"
+                        f"- Rationale: {rationale}"
+                    )
+
                 st.markdown("---")
-                
+
                 # 2. CO₂ COMPARISON
                 st.markdown("### 🌍 CO₂ Emissions")
                 col1, col2 = st.columns(2)

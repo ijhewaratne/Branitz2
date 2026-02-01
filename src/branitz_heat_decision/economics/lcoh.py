@@ -87,6 +87,29 @@ def build_plant_context_from_params(params: EconomicParameters) -> Optional[Plan
     )
 
 
+def get_plant_context_for_marginal(
+    params: EconomicParameters,
+    street_peak_load_kw: float,
+) -> Optional[PlantContext]:
+    """
+    Get PlantContext for marginal cost allocation.
+    Creates one from params if configured, or a sensible default when plant_total_capacity_kw=0.
+    Default: assumes district plant with spare capacity (total=2x street peak, utilized=40%).
+    """
+    if params.plant_total_capacity_kw > 0:
+        return build_plant_context_from_params(params)
+    # Default: spare capacity exists so marginal allocation = 0
+    total = max(2000.0, 2.0 * float(street_peak_load_kw))
+    utilized = total * 0.4  # 40% utilized, 60% spare
+    return PlantContext(
+        total_capacity_kw=total,
+        total_cost_eur=float(params.plant_cost_base_eur),
+        utilized_capacity_kw=utilized,
+        is_built=True,
+        marginal_cost_per_kw=float(params.plant_marginal_cost_per_kw_eur),
+    )
+
+
 # --- Helper Functions for Network Cost Extraction ---
 
 
@@ -356,10 +379,17 @@ def compute_lcoh_dh(
     elif plant_cost_allocation == "none":
         capex_plant = 0.0
         plant_allocation_info["rationale"] = "No plant cost (street-level marginal cost)"
-    elif plant_cost_allocation == "marginal" and plant_context is not None and street_peak_load_kw is not None:
-        allocation = plant_context.calculate_marginal_allocation(float(street_peak_load_kw))
-        capex_plant = float(allocation["allocated_cost"])
-        plant_allocation_info.update(allocation)
+    elif plant_cost_allocation == "marginal":
+        if plant_context is not None and street_peak_load_kw is not None:
+            allocation = plant_context.calculate_marginal_allocation(float(street_peak_load_kw))
+            capex_plant = float(allocation.get("allocated_cost", allocation.get("allocated_eur", 0)))
+            plant_allocation_info.update(allocation)
+        else:
+            # No plant context or peak load: 0 allocation (cost at district level)
+            capex_plant = 0.0
+            plant_allocation_info["rationale"] = (
+                "Marginal requested but no plant context - 0€ allocation (cost at district level)"
+            )
     elif plant_cost_allocation == "proportional":
         peak_kw = street_peak_load_kw if street_peak_load_kw is not None else 0.0
         district_kw = (

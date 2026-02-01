@@ -54,6 +54,11 @@ from branitz_heat_decision.economics.lcoh import (
     PlantContext,
     build_plant_context_from_params,
     compute_lcoh_dh_for_cluster,
+    get_plant_context_for_marginal,
+)
+from branitz_heat_decision.economics.plant_context import (
+    COTTBUS_CHP,
+    get_plant_context_for_street,
 )
 from branitz_heat_decision.economics.co2 import DHCO2Inputs, HPCO2Inputs
 
@@ -241,7 +246,11 @@ def main() -> None:
         max_feeder_loading_pct=max_feeder_loading_pct,
     )
 
+    # PlantContext: Cottbus CHP (shared) for marginal, or from params if configured
     plant_ctx = build_plant_context_from_params(params)
+    if plant_ctx is None and params.plant_cost_allocation == "marginal":
+        plant_info = get_plant_context_for_street(design_capacity_kw)
+        plant_ctx = plant_info["context"]
 
     if args.use_cluster_method:
         # Integration checklist: pass combined CHA+DHA data to compute_lcoh_dh_for_cluster
@@ -313,10 +322,21 @@ def main() -> None:
         params=params,
     )
 
+    plant_capacity_status = None
+    if plant_ctx and params.plant_cost_allocation == "marginal":
+        plant_capacity_status = {
+            "total_plant_kw": plant_ctx.total_capacity_kw,
+            "available_kw": plant_ctx.total_capacity_kw - plant_ctx.utilized_capacity_kw,
+            "street_share_pct": (design_capacity_kw / plant_ctx.total_capacity_kw * 100)
+            if plant_ctx.total_capacity_kw > 0
+            else 0,
+        }
+
     det = {
         "cluster_id": cluster_id,
         "annual_heat_mwh": annual_heat_mwh,
         "design_capacity_kw": design_capacity_kw,
+        "plant_capacity_status": plant_capacity_status,
         "dh_lengths_m": lengths,
         "pump_power_kw": pump_power_kw,
         "total_pipe_length_m": total_pipe_length_m,

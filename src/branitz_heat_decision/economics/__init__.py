@@ -7,8 +7,11 @@ Economics module (Phase 4):
 
 from .integration import (
     build_pipe_network_results_for_cluster,
+    calculate_cluster_economics_correct,
+    calculate_economics_for_selected_street,
     get_trunk_connection_length_m,
 )
+from .plant_context import COTTBUS_CHP, CottbusCHPContext, get_plant_context_for_street
 from .params import (
     EconomicParameters,
     EconomicsParams,
@@ -34,7 +37,12 @@ from .co2 import compute_co2_dh, compute_co2_hp, co2_dh, co2_hp
 from .monte_carlo import compute_mc_summary, run_monte_carlo, run_monte_carlo_for_cluster
 
 __all__ = [
+    "COTTBUS_CHP",
+    "CottbusCHPContext",
     "build_pipe_network_results_for_cluster",
+    "calculate_cluster_economics_correct",
+    "calculate_economics_for_selected_street",
+    "get_plant_context_for_street",
     "get_trunk_connection_length_m",
     "EconomicParameters",
     "EconomicsParams",

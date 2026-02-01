@@ -44,7 +44,6 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UHDC Report - {{ cluster_id }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- DataTables (Bootstrap 5 theme) -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -97,29 +96,6 @@ HTML_TEMPLATE = """
         .robust-badge { background-color: #28a745; }
         .sensitive-badge { background-color: #ffc107; color: #000; }
         .uncertain-badge { background-color: #6c757d; }
-        .chart-container { max-width: 600px; margin: auto; }
-        .map-container {
-            position: relative;
-            min-height: 500px;
-        }
-        .map-iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .map-loading-spinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
-        @media (max-width: 768px) {
-            .map-iframe { height: 400px; }
-            .nav-tabs .nav-link { font-size: 0.875rem; padding: 0.5rem 0.75rem; }
-        }
         /* Hover tooltips for auditability: show contract JSON path */
         .source-hint {
             position: relative;
@@ -374,30 +350,6 @@ HTML_TEMPLATE = """
             </div>
         </div>
 
-        <!-- Charts -->
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">LCOH Comparison</h5>
-                        <div class="chart-container">
-                            {{ lcoh_chart_html|safe }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Monte Carlo Robustness</h5>
-                        <div class="chart-container">
-                            {{ robustness_chart_html|safe }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Technical Details Table -->
         <div class="row mb-4">
             <div class="col-12">
@@ -510,77 +462,6 @@ HTML_TEMPLATE = """
                 a.download = 'uhdc_metrics_{{ cluster_id }}.csv';
                 a.click();
                 URL.revokeObjectURL(url);
-            }
-        </script>
-
-        <!-- Interactive Maps Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Interactive Network Maps</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if map_specs and map_specs|length > 0 %}
-                            <ul class="nav nav-tabs mb-3" id="mapTabs" role="tablist">
-                                {% for m in map_specs %}
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link {% if loop.first %}active{% endif %}" id="{{ m.key }}-tab"
-                                            data-bs-toggle="tab" data-bs-target="#{{ m.key }}" type="button" role="tab">
-                                        {% if m.icon %}
-                                            <i class="bi {{ m.icon }} me-2"></i>
-                                        {% endif %}
-                                        {{ m.label }}
-                                    </button>
-                                </li>
-                                {% endfor %}
-                            </ul>
-
-                            <div class="tab-content" id="mapTabsContent">
-                                {% for m in map_specs %}
-                                <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="{{ m.key }}" role="tabpanel">
-                                    <div class="map-container">
-                                        <iframe src="{{ m.src }}" class="map-iframe" id="{{ m.key }}-frame"
-                                                onload="this.style.opacity=1; hideSpinner('{{ m.key }}');"
-                                                onerror="handleMapError('{{ m.key }}')"></iframe>
-                                        <div class="map-loading-spinner" id="{{ m.key }}-spinner">
-                                            <div class="spinner-border {{ m.spinner_class or 'text-primary' }}" role="status">
-                                                <span class="visually-hidden">Loading map...</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center py-5 text-muted">
-                                <div style="font-size: 4rem;">🗺️</div>
-                                <p class="mt-3 mb-0">Interactive maps not available.</p>
-                                <small>Run CHA/DHA pipelines with <code>--interactive-map</code> to generate maps.</small>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            function hideSpinner(key) {
-                const sp = document.getElementById(key + '-spinner');
-                if (sp) sp.style.display = 'none';
-            }
-            function handleMapError(key) {
-                const iframe = document.getElementById(key + '-frame');
-                if (!iframe) return;
-                const container = iframe.parentElement;
-                if (!container) return;
-                container.innerHTML = `
-                    <div class="text-center py-5 text-danger">
-                        <div style="font-size: 3rem;">⚠️</div>
-                        <p class="mt-2 mb-0">Failed to load map.</p>
-                        <small>Check file path: ${iframe.src}</small>
-                    </div>
-                `;
             }
         </script>
 

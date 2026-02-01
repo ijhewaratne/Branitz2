@@ -18,12 +18,12 @@ class EconomicParameters:
 
     # Energy prices (EUR/MWh)
     electricity_price_eur_per_mwh: float = 250.0
-    gas_price_eur_per_mwh: float = 80.0
+    gas_price_eur_per_mwh: float = 55.0  # Natural gas, current German prices (Cottbus CHP)
     biomass_price_eur_per_mwh: float = 110.0
 
     # Emission factors (kg CO2/MWh)
     ef_electricity_kg_per_mwh: float = 350.0  # German grid mix (reference)
-    ef_gas_kg_per_mwh: float = 200.0
+    ef_gas_kg_per_mwh: float = 202.0  # Natural gas: 202 kg CO2/MWh (UBA)
     ef_biomass_kg_per_mwh: float = 25.0
 
     # CAPEX parameters
@@ -59,8 +59,8 @@ class EconomicParameters:
     dh_om_frac_per_year: float = 0.02
     hp_om_frac_per_year: float = 0.02
 
-    # DH generation type
-    dh_generation_type: str = "biomass"  # 'gas' | 'biomass' | 'electric'
+    # DH generation type (Cottbus CHP uses natural gas)
+    dh_generation_type: str = "gas"  # 'gas' | 'biomass' | 'electric'
 
     # Plant cost allocation (Marginal Cost vs. Sunk Cost principle)
     # 'full' = include full plant cost (default, backward compatible)
