@@ -186,11 +186,13 @@ def _load_total_pipe_length_m_from_cha(cluster_id: str) -> float:
 
 
 def _load_max_feeder_loading_pct_from_dha(cluster_id: str) -> float:
+    """Load max feeder loading % from DHA KPIs. Supports flat and nested (kpis) schema."""
     p = resolve_cluster_path(cluster_id, "dha") / "dha_kpis.json"
     if not p.exists():
         return 0.0
     obj = json.loads(p.read_text(encoding="utf-8"))
-    return float((obj.get("kpis") or {}).get("max_feeder_loading_pct", 0.0))
+    k = obj.get("kpis") or obj  # flat schema: KPIs at top level
+    return float(k.get("max_feeder_loading_pct", 0.0))
 
 
 def main() -> None:
