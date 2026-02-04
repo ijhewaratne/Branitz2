@@ -88,10 +88,20 @@ class LogicAuditor:
             claims.append(Claim(ClaimType.THRESHOLD, subject, limit, relation=relation))
 
         # Categorical claims: "feasible", "infeasible", "robust", "marginal"
-        cat_pattern = r"(feasible|infeasible|robust|marginal|uncertain)"
+        # Try to capture context (DH/HP) and negation before the categorical term
+        cat_pattern = r"((?:district heating|DH|heat pump|HP).*?)?(?:not\s+)?(feasible|infeasible|robust|marginal|uncertain)"
         matches = re.finditer(cat_pattern, explanation, re.IGNORECASE)
         for match in matches:
-            claims.append(Claim(ClaimType.CATEGORICAL, "decision_status", match.group(1).lower()))
+            context = match.group(1) or ""
+            status = match.group(2).lower()
+            # Check for negation in the matched text
+            match_text = match.group(0).lower()
+            if "not" in match_text and status == "feasible":
+                status = "infeasible"
+            elif "not" in match_text and status == "infeasible":
+                status = "feasible"
+            subject = context.lower().strip() if context else "decision_status"
+            claims.append(Claim(ClaimType.CATEGORICAL, subject, status))
 
         self.extracted_claims = claims
         return claims
@@ -147,7 +157,7 @@ class LogicAuditor:
 
     def _validate_threshold(self, claim: Claim) -> bool:
         """Validate threshold claims (within limits, exceeds, etc.)"""
-        if "velocity" in claim.subject:
+        if "velocity" in claim.subject.lower():
             v_share = (
                 self.contract.get("district_heating", {})
                 .get("hydraulics", {})
@@ -158,18 +168,57 @@ class LogicAuditor:
                     f"Claimed velocity within limits, but v_share={v_share:.2f} < 0.95"
                 )
                 return False
+        elif "loading" in claim.subject.lower():
+            # Electrical grid loading threshold (HP)
+            loading_pct = (
+                self.contract.get("heat_pumps", {})
+                .get("lv_grid", {})
+                .get("max_feeder_loading_pct", 0)
+            )
+            if claim.relation == "within" and loading_pct > 80.0:
+                self.violations.append(
+                    f"Claimed loading within limits, but max_feeder_loading_pct={loading_pct:.2f}% > 80%"
+                )
+                return False
+            elif claim.relation in ("exceeds", "above") and loading_pct <= 80.0:
+                self.violations.append(
+                    f"Claimed loading exceeds threshold, but max_feeder_loading_pct={loading_pct:.2f}% <= 80%"
+                )
+                return False
         return True
 
     def _validate_categorical(self, claim: Claim) -> bool:
         """Validate categorical claims (feasible, robust, etc.)"""
-        contract_status = self.contract.get("district_heating", {}).get("feasible")
+        # Check both DH and HP feasibility if mentioned
         if claim.value in ["feasible", "infeasible"]:
             claimed_bool = claim.value == "feasible"
-            if claimed_bool != contract_status:
-                self.violations.append(
-                    f"Claimed {claim.value}, but contract has feasible={contract_status}"
-                )
-                return False
+            
+            # Check DH feasibility (if context suggests DH)
+            dh_feasible = self.contract.get("district_heating", {}).get("feasible")
+            hp_feasible = self.contract.get("heat_pumps", {}).get("feasible")
+            
+            # If claim mentions "district heating" or "DH", validate against DH
+            # If claim mentions "heat pump" or "HP", validate against HP
+            # Otherwise, check both (conservative)
+            if "district" in claim.subject.lower() or "dh" in claim.subject.lower():
+                if claimed_bool != dh_feasible:
+                    self.violations.append(
+                        f"Claimed DH {claim.value}, but contract has DH feasible={dh_feasible}"
+                    )
+                    return False
+            elif "heat pump" in claim.subject.lower() or "hp" in claim.subject.lower():
+                if claimed_bool != hp_feasible:
+                    self.violations.append(
+                        f"Claimed HP {claim.value}, but contract has HP feasible={hp_feasible}"
+                    )
+                    return False
+            else:
+                # Generic feasibility claim - check if it matches at least one system
+                if claimed_bool != dh_feasible and claimed_bool != hp_feasible:
+                    self.violations.append(
+                        f"Claimed {claim.value}, but contract has DH feasible={dh_feasible}, HP feasible={hp_feasible}"
+                    )
+                    return False
         return True
 
     def _get_contract_value(self, subject: str) -> Union[float, None]:

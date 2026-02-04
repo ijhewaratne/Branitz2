@@ -233,9 +233,34 @@ def explain_with_llm(
             raise
         explanation = _fallback_template_explanation(contract, decision, style)
     
-    # Safety validation (critical)
+    # Safety validation (critical) - use LogicAuditor from safety_validator
     try:
-        _validate_explanation_safety(explanation, contract, decision)
+        from .safety_validator import LogicAuditor
+        
+        auditor = LogicAuditor(contract)
+        is_valid, violations = auditor.validate_explanation(explanation)
+        
+        if not is_valid:
+            logger.error(f"LLM safety check failed: {violations}")
+            logger.error(f"LLM output: {explanation}")
+            if no_fallback:
+                raise ValueError(f"LLM explanation validation failed: {violations}")
+            explanation = _fallback_template_explanation(contract, decision, style)
+        else:
+            # Also run legacy validation for backward compatibility
+            _validate_explanation_safety(explanation, contract, decision)
+            
+    except ImportError:
+        # Fallback to legacy validation if safety_validator not available
+        logger.warning("safety_validator not available, using legacy validation")
+        try:
+            _validate_explanation_safety(explanation, contract, decision)
+        except ValueError as e:
+            logger.error(f"LLM safety check failed: {e}")
+            logger.error(f"LLM output: {explanation}")
+            if no_fallback:
+                raise
+            explanation = _fallback_template_explanation(contract, decision, style)
     except ValueError as e:
         logger.error(f"LLM safety check failed: {e}")
         logger.error(f"LLM output: {explanation}")
